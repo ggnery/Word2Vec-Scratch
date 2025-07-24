@@ -26,11 +26,33 @@ class Word2Vec:
         self.w2 -= self.eta * delta_w2
     
     def train(self, input, output, epochs):
+        loss_history = []
+        
         for epoch in range(epochs):
-            loss = 0
-            for i, (x, y) in enumerate(zip(input, output)):
+            epoch_loss = 0
+            num_samples = len(input)
+            
+            for x, y in zip(input, output):
                 cache = self.forward(x)
                 output_gradient = cache["output"] - y
-                loss += categorical_crossentropy(y, cache["output"])
+                epoch_loss += categorical_crossentropy(y, cache["output"])
                 self.backward(output_gradient, cache)
-            print(f"Epoch {epoch}/{epochs}: Loss -> {loss/i}")
+            
+            avg_loss = epoch_loss / num_samples
+            loss_history.append(avg_loss)
+            print(f"Epoch {epoch+1}/{epochs}: Loss -> {avg_loss:.6f}")
+        
+        return loss_history
+    
+    def get_embedding(self, one_hot_word):
+        return self.forward(one_hot_word)["hidden"]
+    
+    def cosine_similarity(self, embedding1, embedding2):
+        # Flatten the embeddings to 1D vectors
+        embedding1 = embedding1.flatten()
+        embedding2 = embedding2.flatten()
+        
+        dot_product = np.dot(embedding1, embedding2)
+        norm1 = np.sqrt(np.sum(np.square(embedding1)))
+        norm2 = np.sqrt(np.sum(np.square(embedding2)))
+        return dot_product/ (norm1*norm2)
