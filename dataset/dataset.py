@@ -1,12 +1,9 @@
 import numpy as np
 
 class Dataset:
-    def __init__(self, data_path):
-        self.data = open(data_path, "r").read().split(" ")
-    
-    def __init__(self, path):
-        f = open("dataset/text8", "r")
-        self.data = f.read().split(" ")[:10]
+    def __init__(self, data_path, dataset_slice = 500):
+        f = open(data_path, "r")
+        self.data = f.read().split(" ")[:dataset_slice]
         self.vocabulary = self.create_vocabulary()
         self.vocabulary_size = len(self.vocabulary)
     
